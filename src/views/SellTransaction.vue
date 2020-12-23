@@ -6,7 +6,7 @@
         <div class="row">
           <div class="col-sm-2"></div>
           <div class="col-sm-8">
-            <form @submit.prevent="onSubmit">
+            <form @submit.prevent="onSubmit" method="POST">
               <!-- From input -->
               <template v-for="count in countItem">
                 <item-transaction
@@ -16,26 +16,38 @@
               </template>
               <!--/ Form input -->
               <!-- Sum -->
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-sm-12">
                   <span class="float-right">
                     Total: Rp20.000
                   </span>
                 </div>
-              </div>
+              </div> -->
               <!-- /Sum -->
               <!-- Button -->
               <div class="row mt-4">
-                <div class="col-sm-12">
-                  <button class="btn btn-primary float-right" type="submit">
-                    Selesai
+                <div class="col-sm-8">
+                  <button
+                    class="btn btn-danger float-left mr-2"
+                    type="button"
+                    @click.prevent="onClickAddGoods(false)"
+                  >
+                    Hapus Barang
                   </button>
                   <button
-                    class="btn btn-success float-right mr-2"
+                    class="btn btn-success float-left mr-2"
                     type="button"
-                    @click.prevent="onClickAddGoods"
+                    @click.prevent="onClickAddGoods(true)"
                   >
                     Tambah Barang
+                  </button>
+                </div>
+                <div class="col-sm-4">
+                  <button
+                    class="btn btn-primary float-right px-4"
+                    type="submit"
+                  >
+                    Selesai
                   </button>
                 </div>
               </div>
@@ -78,8 +90,12 @@ export default {
         }
       });
     },
-    onClickAddGoods() {
-      this.countItem++;
+    onClickAddGoods(status) {
+      if (status) {
+        this.countItem++;
+      } else {
+        this.countItem--;
+      }
     },
   },
 };
