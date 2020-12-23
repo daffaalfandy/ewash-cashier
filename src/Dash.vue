@@ -59,6 +59,18 @@
                 to="/"
                 class="nav-link"
               >
+                <i class="nav-icon fas fa-tachometer-alt mr-2"></i>
+                <span>Dashboard</span>
+              </router-link>
+            </li>
+            <li class="nav-item">
+              <router-link
+                tag="a"
+                active-class="active"
+                exact
+                to="/transaction"
+                class="nav-link"
+              >
                 <i class="nav-icon fas fa-cash-register mr-2"></i>
                 <span>Transaksi Penjualan</span>
               </router-link>

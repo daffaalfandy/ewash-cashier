@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Dash from "../Dash";
 import SellTransaction from "../views/SellTransaction";
 import Inventory from "../views/Inventory";
+import Dashboard from "../views/Dashboard";
 
 Vue.use(VueRouter);
 
@@ -13,6 +14,11 @@ const routes = [
     children: [
       {
         path: "",
+        name: "Dashboard",
+        component: Dashboard,
+      },
+      {
+        path: "/transaction",
         name: "Sell Transaction",
         component: SellTransaction,
       },
