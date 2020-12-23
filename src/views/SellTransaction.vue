@@ -30,14 +30,14 @@
                   <button
                     class="btn btn-danger float-left mr-2"
                     type="button"
-                    @click.prevent="onClickAddGoods(false)"
+                    @click.prevent="onClickAddItems(false)"
                   >
                     Hapus Barang
                   </button>
                   <button
                     class="btn btn-success float-left mr-2"
                     type="button"
-                    @click.prevent="onClickAddGoods(true)"
+                    @click.prevent="onClickAddItems(true)"
                   >
                     Tambah Barang
                   </button>
@@ -90,7 +90,7 @@ export default {
         }
       });
     },
-    onClickAddGoods(status) {
+    onClickAddItems(status) {
       if (status) {
         this.countItem++;
       } else {

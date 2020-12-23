@@ -5,13 +5,13 @@
       <input
         type="text"
         class="form-control col-sm-8"
-        :name="goods.goodName"
+        :name="items.itemName"
         required
       />
     </div>
     <div class="form-group row justify-content-center">
       <label class="col-sm-4 col-form-label">Jenis Barang:</label>
-      <select :name="goods.goodCategory" class="form-control col-sm-8" required>
+      <select :name="items.itemCategory" class="form-control col-sm-8" required>
         <option value="car">Mobil</option>
         <option value="motorcycle">Motor</option>
         <option value="carpet">Karpet</option>
@@ -22,7 +22,7 @@
       <input
         type="number"
         class="form-control col-sm-8"
-        :name="goods.goodQty"
+        :name="items.itemQty"
         required
       />
     </div>
@@ -37,10 +37,10 @@ export default {
   },
   data() {
     return {
-      goods: {
-        goodName: `good-name-${this.count}`,
-        goodCategory: `good-category-${this.count}`,
-        goodQty: `good-qty-${this.count}`,
+      items: {
+        itemName: `good-name-${this.count}`,
+        itemCategory: `good-category-${this.count}`,
+        itemQty: `good-qty-${this.count}`,
       },
     };
   },

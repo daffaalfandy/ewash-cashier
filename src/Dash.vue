@@ -63,6 +63,18 @@
                 <span>Transaksi Penjualan</span>
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link
+                tag="a"
+                active-class="active"
+                exact
+                to="/inventory"
+                class="nav-link"
+              >
+                <i class="nav-icon fas fa-th mr-2"></i>
+                <span>Data Barang</span>
+              </router-link>
+            </li>
           </ul>
         </nav>
       </div>

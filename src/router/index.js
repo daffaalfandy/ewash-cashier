@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Dash from "../Dash";
 import SellTransaction from "../views/SellTransaction";
+import Inventory from "../views/Inventory";
 
 Vue.use(VueRouter);
 
@@ -12,8 +13,13 @@ const routes = [
     children: [
       {
         path: "",
-        name: "Dashboard",
+        name: "Sell Transaction",
         component: SellTransaction,
+      },
+      {
+        path: "inventory",
+        name: "Inventory",
+        component: Inventory,
       },
     ],
   },
