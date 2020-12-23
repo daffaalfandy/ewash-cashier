@@ -25,7 +25,7 @@
           style="opacity: 0.8"
           class="brand-image img-circle elevation-3"
         /> -->
-        <span class="brand-text font-weight-light">Admin LTE</span>
+        <span class="brand-text font-weight-light">Cuci Mobil</span>
       </a>
 
       <!-- Sidebar -->
@@ -40,7 +40,7 @@
             />
           </div>
           <div class="info">
-            <a href="/" class="d-block">Admin LTE</a>
+            <a href="/" class="d-block">Admin</a>
           </div>
         </div>
 
@@ -59,8 +59,8 @@
                 to="/"
                 class="nav-link"
               >
-                <i class="nav-icon fas fa-tachometer-alt mr-2"></i>
-                <span>Dashboard</span>
+                <i class="nav-icon fas fa-cash-register mr-2"></i>
+                <span>Transaksi Penjualan</span>
               </router-link>
             </li>
           </ul>

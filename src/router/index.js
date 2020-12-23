@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Dash from "../Dash";
-import Dashboard from "../views/Dashboard";
+import SellTransaction from "../views/SellTransaction";
 
 Vue.use(VueRouter);
 
@@ -13,7 +13,7 @@ const routes = [
       {
         path: "",
         name: "Dashboard",
-        component: Dashboard,
+        component: SellTransaction,
       },
     ],
   },
