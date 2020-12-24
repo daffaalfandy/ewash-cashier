@@ -12,7 +12,7 @@
             <button
               class="btn btn-primary float-right px-4"
               type="button"
-              @click.prevent="onClickModal('add')"
+              @click.prevent="onClickModal"
             >
               Tambah Barang
             </button>
@@ -32,9 +32,14 @@
             </thead>
             <tbody>
               <!-- Item list -->
-              <inventory-list
-                v-on:edit-clicked="onClickModal('edit')"
-              ></inventory-list>
+              <template v-for="(item, index) in items">
+                <inventory-list
+                  :key="item._id"
+                  :index="index"
+                  :item="item"
+                  v-on:edit-clicked="onEditClicked"
+                ></inventory-list>
+              </template>
               <!-- /Item list -->
             </tbody>
           </table>
@@ -52,22 +57,22 @@
     >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">
-              {{ editMode ? "Edit Barang" : "Tambah Barang" }}
-            </h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="container">
-              <form action="POST" @submit.prevent="">
+          <form @submit.prevent="onSubmit">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">
+                {{ editMode ? "Edit Barang" : "Tambah Barang" }}
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="container">
                 <div class="form-group row">
                   <label
                     for="category"
@@ -78,7 +83,8 @@
                     type="text"
                     class="form-control col-sm-7"
                     id="category"
-                    :name="item.category"
+                    v-model="item.category"
+                    required
                   />
                 </div>
                 <div class="form-group row">
@@ -89,24 +95,25 @@
                     type="number"
                     class="form-control col-sm-7"
                     id="price"
-                    :name="item.price"
+                    v-model="item.price"
+                    required
                   />
                 </div>
-              </form>
+              </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Kembali
-            </button>
-            <button type="button" class="btn btn-primary">
-              {{ editMode ? "Edit Barang" : "Tambah Barang" }}
-            </button>
-          </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Kembali
+              </button>
+              <button type="submit" class="btn btn-primary">
+                {{ editMode ? "Edit Barang" : "Tambah Barang" }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -115,7 +122,8 @@
 </template>
 
 <script>
-/*global $*/
+/*global $, Swal*/
+import { mapActions, mapGetters } from "vuex";
 import InventoryList from "./components/InventoryList";
 
 export default {
@@ -126,30 +134,44 @@ export default {
     return {
       editMode: false,
       item: {
-        name: "",
+        category: "",
         price: 0,
       },
     };
   },
   methods: {
-    onClickModal(type) {
-      if (type === "add") {
-        this.editMode = false;
-        this.setModal();
-      } else if (type === "edit") {
-        this.editMode = true;
-        this.setModal();
+    ...mapActions(["addItem", "fetchItems", "updateItem"]),
+    async onSubmit() {
+      if (!this.editMode) {
+        await this.addItem({ item: this.item });
+        Swal.fire("Sukses!", "Data berhasil disimpan", "success");
+      } else if (this.editMode) {
+        await this.updateItem({ item: this.item });
+        Swal.fire("Sukses!", "Data berhasil disimpan", "success");
       }
+      $("#inventoryModal").modal("hide");
+    },
+    onClickModal() {
+      this.editMode = false;
+      this.setModal();
+    },
+    onEditClicked(item) {
+      this.editMode = true;
+      this.item = item;
+      this.setModal();
     },
     setModal() {
       if (!this.editMode) {
-        this.item.name = "";
+        this.item = {};
+        this.item.category = "";
         this.item.price = 0;
-      } else if (this.editMode) {
-        console.log("edit mode");
       }
       $("#inventoryModal").modal("show");
     },
+  },
+  computed: mapGetters(["items"]),
+  async mounted() {
+    await this.fetchItems();
   },
 };
 </script>
