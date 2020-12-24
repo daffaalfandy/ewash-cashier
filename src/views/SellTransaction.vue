@@ -12,19 +12,9 @@
                 <item-transaction
                   :key="count"
                   :count="count"
+                  :categories="items"
                 ></item-transaction>
               </template>
-              <!--/ Form input -->
-              <!-- Sum -->
-              <!-- <div class="row">
-                <div class="col-sm-12">
-                  <span class="float-right">
-                    Total: Rp20.000
-                  </span>
-                </div>
-              </div> -->
-              <!-- /Sum -->
-              <!-- Button -->
               <div class="row mt-4">
                 <div class="col-sm-8">
                   <button
@@ -63,6 +53,7 @@
 <script>
 /*global Swal, EventBus */
 import ItemTransaction from "./components/ItemTransaction";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 export default {
   components: {
     "item-transaction": ItemTransaction,
@@ -73,8 +64,13 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["fetchItems"]),
+    ...mapMutations(["emptyCart"]),
     onSubmit() {
       EventBus.$emit("submit-clicked");
+
+      let sumOfPrice = this.countPrice();
+
       Swal.fire({
         title: "Selesaikan transaksi?",
         icon: "warning",
@@ -83,12 +79,16 @@ export default {
         cancelButtonColor: "#d33",
         confirmButtonText: "Ya",
         cancelButtonText: "Tidak",
-        text: "Total: Rp20.000",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire("Sukses!", "Transaksi berhasil.", "success");
-        }
-      });
+        text: `Total: Rp${sumOfPrice.toLocaleString("id-ID")}`,
+      })
+        .then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire("Sukses!", "Transaksi berhasil.", "success");
+          }
+        })
+        .finally(() => {
+          this.emptyCart();
+        });
     },
     onClickAddItems(status) {
       if (status) {
@@ -97,6 +97,17 @@ export default {
         this.countItem--;
       }
     },
+    countPrice() {
+      let x = 0;
+      this.cart.forEach((item) => {
+        x += item.price;
+      });
+      return x;
+    },
+  },
+  computed: mapGetters(["items", "cart"]),
+  async mounted() {
+    await this.fetchItems();
   },
 };
 </script>

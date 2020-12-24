@@ -5,16 +5,21 @@
       <input
         type="text"
         class="form-control col-sm-8"
-        :name="items.itemName"
+        v-model="item.name"
         required
       />
     </div>
     <div class="form-group row justify-content-center">
       <label class="col-sm-4 col-form-label">Jenis Barang:</label>
-      <select :name="items.itemCategory" class="form-control col-sm-8" required>
-        <option value="car">Mobil</option>
-        <option value="motorcycle">Motor</option>
-        <option value="carpet">Karpet</option>
+      <select :id="count" class="form-control col-sm-8" required>
+        <template v-for="category in categories">
+          <option
+            :data-id="category._id"
+            :key="category._id"
+            :value="category.category"
+            >{{ category.category }}</option
+          >
+        </template>
       </select>
     </div>
     <div class="form-group row justify-content-center">
@@ -22,7 +27,7 @@
       <input
         type="number"
         class="form-control col-sm-8"
-        :name="items.itemQty"
+        v-model="item.qty"
         required
       />
     </div>
@@ -31,31 +36,49 @@
       <input
         type="text"
         class="form-control col-sm-8"
-        :name="items.itemInformation"
+        v-model="item.information"
       />
     </div>
   </fragment>
 </template>
 
 <script>
-/*global EventBus */
+/*global EventBus, $, moment  */
+import { mapMutations } from "vuex";
+
 export default {
   props: {
     count: Number,
+    categories: Array,
   },
   data() {
     return {
-      items: {
-        itemName: `good-name-${this.count}`,
-        itemCategory: `good-category-${this.count}`,
-        itemQty: `good-qty-${this.count}`,
-        itemInformation: `good-information-${this.count}`,
+      item: {
+        name: "",
+        category: Object,
+        qty: 0,
+        information: "",
+        price: 0,
+        date: moment.date(),
+        month: moment.month(),
+        year: moment.year(),
       },
     };
   },
+  methods: {
+    ...mapMutations(["setCart"]),
+  },
   mounted() {
     EventBus.$on("submit-clicked", () => {
-      console.log("submitted");
+      let idCategory = $(`#${this.count}`)
+        .find(":selected")
+        .data("id");
+      const index = this.categories.findIndex(
+        (category) => category._id == idCategory
+      );
+      this.item.price = this.item.qty * this.categories[index].price;
+      this.item.category = this.categories[index];
+      this.setCart({ item: this.item });
     });
   },
   beforeDestroy() {

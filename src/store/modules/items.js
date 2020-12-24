@@ -5,12 +5,10 @@ const url = `${API_LOCATION}/items`;
 
 const state = {
   items: [],
-  cart: [],
 };
 
 const getters = {
   items: (state) => state.items,
-  cart: (state) => state.cart,
 };
 
 const actions = {
