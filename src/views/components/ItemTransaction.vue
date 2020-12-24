@@ -26,6 +26,14 @@
         required
       />
     </div>
+    <div class="form-group row justify-content-center">
+      <label class="col-sm-4 col-form-label">Keterangan:</label>
+      <input
+        type="text"
+        class="form-control col-sm-8"
+        :name="items.itemInformation"
+      />
+    </div>
   </fragment>
 </template>
 
@@ -41,6 +49,7 @@ export default {
         itemName: `good-name-${this.count}`,
         itemCategory: `good-category-${this.count}`,
         itemQty: `good-qty-${this.count}`,
+        itemInformation: `good-information-${this.count}`,
       },
     };
   },
