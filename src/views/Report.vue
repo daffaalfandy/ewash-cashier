@@ -28,7 +28,7 @@
               <table class="table">
                 <thead class="thead-dark">
                   <tr>
-                    <th>No</th>
+                    <th>#</th>
                     <th>Nama Barang</th>
                     <th>Jenis Barang</th>
                     <th>Kuantitas</th>
@@ -38,9 +38,9 @@
                 </thead>
                 <tbody>
                   <!-- Start Looping -->
-                  <template v-for="(item, index) in items">
-                    <tr :key="index">
-                      <td>{{ index + 1 }}</td>
+                  <template v-for="item in pageOfItems">
+                    <tr :key="item.id">
+                      <td>{{ item.id }}</td>
                       <td>{{ item.name }}</td>
                       <td>{{ item.category }}</td>
                       <td>{{ item.qty }}</td>
@@ -52,6 +52,16 @@
                 </tbody>
               </table>
             </div>
+            <!-- Pagination -->
+            <jw-pagination
+              v-if="dataReady"
+              :items="items"
+              @changePage="onChangePage"
+              :pageSize="5"
+              :labels="customLabels"
+            >
+            </jw-pagination>
+            <!-- /Pagination -->
           </div>
         </div>
       </div>
@@ -117,6 +127,14 @@ export default {
       month: moment.month(),
       year: moment.year(),
       items: [],
+      pageOfItems: [],
+      dataReady: false,
+      customLabels: {
+        first: "Awal",
+        last: "Akhir",
+        previous: "<",
+        next: ">",
+      },
     };
   },
   methods: {
@@ -141,7 +159,12 @@ export default {
         });
       });
 
-      console.log(this.items);
+      this.items.forEach((item, index) => {
+        item.id = index + 1;
+      });
+    },
+    onChangePage(pageOfItems) {
+      this.pageOfItems = pageOfItems;
     },
   },
   async mounted() {
@@ -151,6 +174,7 @@ export default {
       year: this.year,
     });
     this.dataProcess();
+    this.dataReady = true;
   },
   computed: mapGetters(["dailyTransaction"]),
 };
