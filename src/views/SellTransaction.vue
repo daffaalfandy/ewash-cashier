@@ -51,7 +51,7 @@
 </template>
 
 <script>
-/*global Swal, EventBus */
+/*global Swal, EventBus, moment */
 import ItemTransaction from "./components/ItemTransaction";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 export default {
@@ -61,15 +61,26 @@ export default {
   data() {
     return {
       countItem: 1,
+      date: moment.date(),
+      month: moment.month(),
+      year: moment.year(),
     };
   },
   methods: {
-    ...mapActions(["fetchItems"]),
+    ...mapActions(["fetchItems", "addTransaction"]),
     ...mapMutations(["emptyCart"]),
     onSubmit() {
       EventBus.$emit("submit-clicked");
 
       let sumOfPrice = this.countPrice();
+
+      let payload = {
+        date: this.date,
+        month: this.month,
+        year: this.year,
+        total: sumOfPrice,
+        item: this.cart,
+      };
 
       Swal.fire({
         title: "Selesaikan transaksi?",
@@ -83,7 +94,13 @@ export default {
       })
         .then((result) => {
           if (result.isConfirmed) {
-            Swal.fire("Sukses!", "Transaksi berhasil.", "success");
+            this.addTransaction(payload).then(() => {
+              Swal.fire("Sukses!", "Transaksi berhasil.", "success").then(
+                () => {
+                  this.$router.go();
+                }
+              );
+            });
           }
         })
         .finally(() => {

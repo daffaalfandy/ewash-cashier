@@ -43,7 +43,7 @@
 </template>
 
 <script>
-/*global EventBus, $, moment  */
+/*global EventBus, $  */
 import { mapMutations } from "vuex";
 
 export default {
@@ -59,9 +59,6 @@ export default {
         qty: 0,
         information: "",
         price: 0,
-        date: moment.date(),
-        month: moment.month(),
-        year: moment.year(),
       },
     };
   },
