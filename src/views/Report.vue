@@ -12,7 +12,7 @@
               id="date"
               name="date"
               @change="onClickDate"
-              :value="date"
+              :value="datepick"
             />
             <div class="col-sm-4">
               <button
@@ -38,14 +38,16 @@
                 </thead>
                 <tbody>
                   <!-- Start Looping -->
-                  <tr>
-                    <td>1</td>
-                    <td>Avanza</td>
-                    <td>Mobil</td>
-                    <td>1</td>
-                    <td>Plat AB12345BC</td>
-                    <td>Rp10.000</td>
-                  </tr>
+                  <template v-for="(item, index) in items">
+                    <tr :key="index">
+                      <td>{{ index + 1 }}</td>
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.category }}</td>
+                      <td>{{ item.qty }}</td>
+                      <td>{{ item.information }}</td>
+                      <td>Rp{{ item.price.toLocaleString("id-ID") }}</td>
+                    </tr>
+                  </template>
                   <!-- End Looping -->
                 </tbody>
               </table>
@@ -103,23 +105,53 @@
 
 <script>
 /* global  moment, $*/
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   data() {
     return {
-      date: `${moment.get("year")}-${moment.get("month")}-${moment.get(
+      datepick: `${moment.get("year")}-${moment.get("month")}-${moment.get(
         "date"
       )}`,
+      date: moment.date(),
+      month: moment.month(),
+      year: moment.year(),
+      items: [],
     };
   },
   methods: {
+    ...mapActions(["fetchDailyTransaction"]),
     onClickDate() {
-      this.date = document.getElementById("date").value;
-      console.log(this.date);
+      this.datepick = document.getElementById("date").value;
     },
     onClickSavePDF() {
       $("#reportModal").modal("show");
     },
+    dataProcess() {
+      this.dailyTransaction.forEach((transaction) => {
+        transaction.item.forEach((i) => {
+          let item = {};
+          item.name = i.name;
+          item.category = i.category.category;
+          item.qty = i.qty;
+          item.information = i.information;
+          item.price = i.price;
+
+          this.items.unshift(item);
+        });
+      });
+
+      console.log(this.items);
+    },
   },
-  mounted() {},
+  async mounted() {
+    await this.fetchDailyTransaction({
+      date: this.date,
+      month: this.month,
+      year: this.year,
+    });
+    this.dataProcess();
+  },
+  computed: mapGetters(["dailyTransaction"]),
 };
 </script>
