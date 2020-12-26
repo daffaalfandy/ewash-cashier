@@ -92,9 +92,21 @@
           </div>
           <div class="modal-body">
             <div class="container justify-content-center text-center">
-              <button class="btn btn-info mx-1">Harian</button>
-              <button class="btn btn-info mx-1">Bulanan</button>
-              <button class="btn btn-info mx-1">Tahunan</button>
+              <!-- <button class="btn btn-info mx-1">Harian</button> -->
+              <button
+                type="button"
+                @click.prevent="onClickMonthly"
+                class="btn btn-info mx-1"
+              >
+                Bulanan
+              </button>
+              <button
+                type="button"
+                @click.prevent="onClickYearly"
+                class="btn btn-info mx-1"
+              >
+                Tahunan
+              </button>
             </div>
           </div>
           <div class="modal-footer">
@@ -114,18 +126,35 @@
 </template>
 
 <script>
-/* global  moment, $*/
+/* eslint-disable no-unused-vars */
+/* global , $, pdfFonts, pdfMake*/
 import { mapGetters, mapActions } from "vuex";
+import moment from "moment";
+import { SHOP_NAME, SHOP_ADDRESS } from "../../config/config";
+
+const dataMonth = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
 
 export default {
   data() {
     return {
-      datepick: `${moment.get("year")}-${moment.get("month")}-${moment.get(
-        "date"
-      )}`,
-      date: moment.date(),
-      month: moment.month(),
-      year: moment.year(),
+      datepick: `${moment().get("year")}-${Number(moment().get("month")) +
+        1}-${moment().get("date")}`,
+      date: moment().date(),
+      month: moment().month(),
+      year: moment().year(),
       items: [],
       pageOfItems: [],
       dataReady: false,
@@ -135,29 +164,177 @@ export default {
         previous: "<",
         next: ">",
       },
+      pdfData: [],
     };
   },
   methods: {
     ...mapActions(["fetchDailyTransaction"]),
+    async onClickMonthly() {
+      await this.fetchDailyTransaction({
+        date: this.date,
+        month: this.month,
+        year: this.year,
+        data: "monthly",
+      });
+      this.pdfDataProcess("monthly");
+    },
+    async onClickYearly() {
+      await this.fetchDailyTransaction({
+        date: this.date,
+        month: this.month,
+        year: this.year,
+        data: "yearly",
+      });
+      this.yearlyPdf();
+    },
+    yearlyPdf() {
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      var docDefinition = {
+        pageOrientation: "potrait",
+        pageSize: "A4",
+        content: [
+          {
+            text: "LAPORAN TAHUNAN",
+            style: {
+              bold: true,
+              fontSize: 14,
+              alignment: "justify",
+            },
+            alignment: "center",
+            margin: [0, 0, 0, 20],
+          },
+          {
+            text: SHOP_NAME,
+            style: "subTittle",
+            alignment: "center",
+          },
+          {
+            text: SHOP_ADDRESS,
+            style: "subTittle",
+            alignment: "center",
+            margin: [0, 0, 0, 20],
+          },
+          this.tableYearly([
+            {
+              text: "#",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Bulan",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Pendapatan",
+              style: "tableHeader",
+              alignment: "center",
+            },
+          ]),
+        ],
+        style: {
+          subTittle: {
+            fontSize: 12,
+            alignment: "justify",
+          },
+          tableHeader: {
+            fontSize: 12,
+            alignment: "justify",
+            bold: true,
+          },
+          tableContent: {
+            fontSize: 11,
+            alignment: "justify",
+          },
+        },
+      };
+
+      pdfMake.createPdf(docDefinition).open();
+      $("#reportModal").modal("hide");
+    },
+    tableYearly(columns) {
+      return {
+        columns: [
+          { width: "*", text: "" },
+          {
+            table: {
+              headerRows: 1,
+              body: this.buildTableBodyYearly(columns),
+            },
+            alignment: "center",
+            layout: "lightHorizontalLines",
+          },
+          { width: "*", text: "" },
+        ],
+      };
+    },
+    buildTableBodyYearly(columns) {
+      var body = [];
+
+      body.push(columns);
+
+      this.transaction.forEach((row, index) => {
+        var dataRow = [];
+
+        columns.forEach((column) => {
+          if (column.text === "#") {
+            dataRow.push({
+              text: index + 1,
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Bulan") {
+            dataRow.push({
+              text: dataMonth[row.month],
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Pendapatan") {
+            dataRow.push({
+              text: `Rp${row.income.toLocaleString("id-ID")}`,
+              style: "tableContent",
+              alignment: "center",
+            });
+          }
+        });
+        body.push(dataRow);
+      });
+
+      return body;
+    },
     async onClickDate() {
       this.dataReady = false;
 
       this.datepick = document.getElementById("date").value;
 
       this.date = this.datepick.split("-")[2];
-      this.month = this.datepick.split("-")[1];
+      this.month = Number(this.datepick.split("-")[1]) - 1;
       this.year = this.datepick.split("-")[0];
 
       await this.fetchDailyTransaction({
         date: this.date,
         month: this.month,
         year: this.year,
+        data: "daily",
       });
       this.dataProcess();
       this.dataReady = true;
     },
     onClickSavePDF() {
       $("#reportModal").modal("show");
+    },
+    pdfDataProcess(type) {
+      if (type === "monthly") {
+        let datepick;
+        this.transaction.forEach((t) => {
+          // HORAISO
+          let temp = {};
+
+          temp.datepick = moment(datepick).format("LL");
+
+          this.pdfData.push(temp);
+        });
+      }
     },
     dataProcess() {
       this.items = [];
@@ -187,10 +364,11 @@ export default {
       date: this.date,
       month: this.month,
       year: this.year,
+      data: "daily",
     });
     this.dataProcess();
     this.dataReady = true;
   },
-  computed: mapGetters(["dailyTransaction"]),
+  computed: mapGetters(["dailyTransaction", "transaction"]),
 };
 </script>

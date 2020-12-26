@@ -7,11 +7,13 @@ const url = `${API_LOCATION}/transaction`;
 const state = {
   cart: [],
   dailyTransaction: [],
+  transaction: [],
 };
 
 const getters = {
   cart: (state) => state.cart,
   dailyTransaction: (state) => state.dailyTransaction,
+  transaction: (state) => state.transaction,
 };
 
 const actions = {
@@ -20,10 +22,14 @@ const actions = {
   },
   async fetchDailyTransaction({ commit }, payload) {
     const response = await axios.get(
-      `${url}?d=${payload.date}&m=${payload.month}&y=${payload.year}`
+      `${url}?d=${payload.date}&m=${payload.month}&y=${payload.year}&data=${payload.data}`
     );
 
-    commit("setDailyTransaction", response.data);
+    if (payload.data === "daily") {
+      commit("setDailyTransaction", response.data);
+    } else {
+      commit("setTransaction", response.data);
+    }
   },
 };
 
@@ -33,6 +39,10 @@ const mutations = {
   setDailyTransaction: (state, payload) => {
     state.dailyTransaction = [];
     state.dailyTransaction = payload.transaction;
+  },
+  setTransaction: (state, payload) => {
+    state.transaction = [];
+    state.transaction = payload.transaction;
   },
 };
 

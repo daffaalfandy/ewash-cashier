@@ -87,6 +87,7 @@ export default {
       date: this.date,
       month: this.month,
       year: this.year,
+      data: "daily",
     });
     this.processData();
   },
