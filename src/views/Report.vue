@@ -139,13 +139,28 @@ export default {
   },
   methods: {
     ...mapActions(["fetchDailyTransaction"]),
-    onClickDate() {
+    async onClickDate() {
+      this.dataReady = false;
+
       this.datepick = document.getElementById("date").value;
+
+      this.date = this.datepick.split("-")[2];
+      this.month = this.datepick.split("-")[1];
+      this.year = this.datepick.split("-")[0];
+
+      await this.fetchDailyTransaction({
+        date: this.date,
+        month: this.month,
+        year: this.year,
+      });
+      this.dataProcess();
+      this.dataReady = true;
     },
     onClickSavePDF() {
       $("#reportModal").modal("show");
     },
     dataProcess() {
+      this.items = [];
       this.dailyTransaction.forEach((transaction) => {
         transaction.item.forEach((i) => {
           let item = {};

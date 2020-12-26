@@ -30,8 +30,10 @@ const actions = {
 const mutations = {
   setCart: (state, payload) => state.cart.unshift(payload.item),
   emptyCart: (state) => (state.cart = []),
-  setDailyTransaction: (state, payload) =>
-    (state.dailyTransaction = payload.transaction),
+  setDailyTransaction: (state, payload) => {
+    state.dailyTransaction = [];
+    state.dailyTransaction = payload.transaction;
+  },
 };
 
 export default {

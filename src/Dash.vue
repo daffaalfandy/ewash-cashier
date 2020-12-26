@@ -18,14 +18,14 @@
       class="main-sidebar sidebar-dark-primary elevation-4 sidebar-wrapper"
     >
       <!-- Brand Logo -->
-      <a href="/" class="brand-link">
+      <a href="/" class="brand-link text-center">
         <!-- <img
           src="./assets/images/icon.png"
           alt="AdminLTE Logo"
           style="opacity: 0.8"
           class="brand-image img-circle elevation-3"
         /> -->
-        <span class="brand-text font-weight-light">Cuci Mobil</span>
+        <span class="brand-text font-weight-light">{{ SHOP_NAME }}</span>
       </a>
 
       <!-- Sidebar -->
@@ -133,3 +133,15 @@
     </footer>
   </div>
 </template>
+
+<script>
+import { SHOP_NAME } from "../config/config";
+
+export default {
+  data() {
+    return {
+      SHOP_NAME,
+    };
+  },
+};
+</script>
