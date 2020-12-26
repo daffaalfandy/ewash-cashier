@@ -15,6 +15,7 @@
     "jquery": "^3.5.1",
     "jw-vue-pagination": "^1.0.3",
     "moment": "^2.29.1",
+    "pdfmake": "^0.1.68",
     "popper.js": "^1.16.1",
     "sweetalert2": "^10.12.5",
     "vue": "^2.6.11",

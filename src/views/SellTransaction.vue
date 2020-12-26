@@ -51,9 +51,11 @@
 </template>
 
 <script>
-/*global Swal, EventBus, moment */
+/*global Swal, EventBus, moment, pdfMake, pdfFonts */
 import ItemTransaction from "./components/ItemTransaction";
 import { mapGetters, mapActions, mapMutations } from "vuex";
+import { SHOP_NAME, SHOP_ADDRESS } from "../../config/config";
+
 export default {
   components: {
     "item-transaction": ItemTransaction,
@@ -69,6 +71,140 @@ export default {
   methods: {
     ...mapActions(["fetchItems", "addTransaction"]),
     ...mapMutations(["emptyCart"]),
+    createBills() {
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
+      var docDefinition = {
+        pageOrientation: "potrait",
+        pageSize: {
+          width: 215,
+          height: "auto",
+        },
+        content: [
+          {
+            text: `${SHOP_NAME}`,
+            style: "header",
+            alignment: "center",
+          },
+          {
+            text: `${SHOP_ADDRESS}`,
+            style: "headerAddress",
+            alignment: "center",
+            margin: [0, 10, 0, 0],
+          },
+          {
+            text: `${moment.format("dddd, H:mm")} \n ${moment.format(
+              "Do MMMM YYYY"
+            )}`,
+            style: "headerAddress",
+            alignment: "center",
+            margin: [0, 0, 0, 20],
+          },
+          // Table
+          this.table([
+            {
+              text: "Jenis",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Kuantitas",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Total",
+              style: "tableHeader",
+              alignment: "center",
+            },
+          ]),
+          {
+            text: "** TERIMA KASIH **",
+            style: "headerAddress",
+            alignment: "center",
+            margin: [0, 15],
+          },
+        ],
+        styles: {
+          header: {
+            fontSize: 14,
+            bold: true,
+            alignment: "justify",
+            margin: [3, 2],
+          },
+          headerAddress: {
+            fontSize: 12,
+            alignment: "justify",
+          },
+          tableHeader: {
+            fontSize: 12,
+            alignment: "justify",
+            bold: true,
+          },
+          tableContent: {
+            fontSize: 11,
+            alignment: "justify",
+          },
+        },
+      };
+
+      pdfMake.createPdf(docDefinition).open();
+    },
+    buildTableBody(columns) {
+      var body = [];
+
+      body.push(columns);
+
+      this.cart.forEach((item) => {
+        var dataRow = [];
+
+        columns.forEach((column) => {
+          if (column.text === "Jenis") {
+            dataRow.push({
+              text: item.category.category,
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Kuantitas") {
+            dataRow.push({
+              text: item.qty,
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Total") {
+            dataRow.push({
+              text: `Rp${item.price.toLocaleString("id-ID")}`,
+              style: "tableContent",
+              alignment: "center",
+            });
+          }
+        });
+
+        body.push(dataRow);
+      });
+
+      // Set sum
+      body.push([
+        {
+          colSpan: 3,
+          text: `TOTAL  \t Rp${this.countPrice().toLocaleString("id-ID")}`,
+          alignment: "right",
+          bold: true,
+          fontSize: 12,
+        },
+      ]);
+
+      return body;
+    },
+    table(columns) {
+      return {
+        table: {
+          headerRows: 1,
+          body: this.buildTableBody(columns),
+        },
+        layout: "lightHorizontalLines",
+      };
+    },
     onSubmit() {
       EventBus.$emit("submit-clicked");
 
@@ -94,6 +230,7 @@ export default {
       })
         .then((result) => {
           if (result.isConfirmed) {
+            this.createBills();
             this.addTransaction(payload).then(() => {
               Swal.fire("Sukses!", "Transaksi berhasil.", "success").then(
                 () => {
