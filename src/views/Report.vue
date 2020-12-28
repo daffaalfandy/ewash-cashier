@@ -176,7 +176,7 @@ export default {
         year: this.year,
         data: "monthly",
       });
-      this.pdfDataProcess("monthly");
+      this.monthlyPdf();
     },
     async onClickYearly() {
       await this.fetchDailyTransaction({
@@ -187,6 +187,129 @@ export default {
       });
       this.yearlyPdf();
     },
+    monthlyPdf() {
+      pdfMake.vfs = pdfFonts.pdfMake.vfs;
+      var docDefinition = {
+        pageOrientation: "potrait",
+        pageSize: "A4",
+        content: [
+          {
+            text: "LAPORAN BULANAN",
+            style: "header",
+            alignment: "center",
+            bold: true,
+            margin: [0, 0, 0, 10],
+            fontSize: 16,
+          },
+          {
+            text: [
+              `\t\t\t\t${SHOP_NAME} \n`,
+              `\t\t\t\t${SHOP_ADDRESS}\n`,
+              `\t\t\t\tBULAN ${dataMonth[this.month]} ${this.year}`,
+            ],
+            preserveLeadingSpace: true,
+            style: "header",
+            bold: false,
+            margin: [0, 0, 0, 8],
+          },
+          this.tableMonthly([
+            {
+              text: "Tanggal",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Jenis Barang",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Kuantitas",
+              style: "tableHeader",
+              alignment: "center",
+            },
+            {
+              text: "Sub Total",
+              style: "tableHeader",
+              alignment: "center",
+            },
+          ]),
+        ],
+        style: {
+          subTittle: {
+            fontSize: 12,
+            alignment: "justify",
+          },
+          tableHeader: {
+            fontSize: 12,
+            alignment: "justify",
+            bold: true,
+          },
+          tableContent: {
+            fontSize: 11,
+            alignment: "justify",
+          },
+        },
+      };
+
+      pdfMake.createPdf(docDefinition).open();
+      $("#reportModal").modal("hide");
+    },
+    tableMonthly(columns) {
+      return {
+        columns: [
+          { width: "*", text: "" },
+          {
+            width: "auto",
+            table: {
+              headerRows: 1,
+              body: this.buildTableBodyMonthly(columns),
+            },
+          },
+          { width: "*", text: "" },
+        ],
+      };
+    },
+    buildTableBodyMonthly(columns) {
+      var body = [];
+
+      body.push(columns);
+
+      this.transaction.forEach((row) => {
+        var dataRow = [];
+
+        columns.forEach((column) => {
+          if (column.text === "Tanggal") {
+            dataRow.push({
+              text: `${row.date} ${dataMonth[this.month]}`,
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Jenis Barang") {
+            dataRow.push({
+              text: row.name,
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Kuantitas") {
+            dataRow.push({
+              text: row.qty.toLocaleString("id-ID"),
+              style: "tableContent",
+              alignment: "center",
+            });
+          } else if (column.text === "Sub Total") {
+            dataRow.push({
+              text: `Rp${row.price.toLocaleString("id-ID")}`,
+              style: "tableContent",
+              alignment: "center",
+            });
+          }
+        });
+        body.push(dataRow);
+      });
+
+      return body;
+    },
     yearlyPdf() {
       pdfMake.vfs = pdfFonts.pdfMake.vfs;
       var docDefinition = {
@@ -194,7 +317,7 @@ export default {
         pageSize: "A4",
         content: [
           {
-            text: "LAPORAN TAHUNAN",
+            text: `LAPORAN TAHUNAN ${this.year}`,
             style: {
               bold: true,
               fontSize: 14,
@@ -322,19 +445,6 @@ export default {
     },
     onClickSavePDF() {
       $("#reportModal").modal("show");
-    },
-    pdfDataProcess(type) {
-      if (type === "monthly") {
-        let datepick;
-        this.transaction.forEach((t) => {
-          // HORAISO
-          let temp = {};
-
-          temp.datepick = moment(datepick).format("LL");
-
-          this.pdfData.push(temp);
-        });
-      }
     },
     dataProcess() {
       this.items = [];
