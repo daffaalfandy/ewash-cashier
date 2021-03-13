@@ -1,7 +1,7 @@
 <template>
   <fragment>
     <div class="form-group row justify-content-center">
-      <label class="col-sm-4 col-form-label">Nama Barang:</label>
+      <label class="col-sm-4 col-form-label">Nomor Unit:</label>
       <input
         type="text"
         class="form-control col-sm-8"
@@ -10,7 +10,7 @@
       />
     </div>
     <div class="form-group row justify-content-center">
-      <label class="col-sm-4 col-form-label">Jenis Barang:</label>
+      <label class="col-sm-4 col-form-label">Jenis Unit:</label>
       <select :id="count" class="form-control col-sm-8" required>
         <template v-for="category in categories">
           <option
@@ -23,7 +23,7 @@
       </select>
     </div>
     <div class="form-group row justify-content-center">
-      <label class="col-sm-4 col-form-label">Kuantitas Barang:</label>
+      <label class="col-sm-4 col-form-label">Kuantitas Unit:</label>
       <input
         type="number"
         class="form-control col-sm-8"
@@ -32,7 +32,7 @@
       />
     </div>
     <div class="form-group row justify-content-center">
-      <label class="col-sm-4 col-form-label">Keterangan:</label>
+      <label class="col-sm-4 col-form-label">Petugas:</label>
       <input
         type="text"
         class="form-control col-sm-8"

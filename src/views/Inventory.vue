@@ -77,7 +77,7 @@
                   <label
                     for="category"
                     class="col-sm-5 col-form-label text-center"
-                    >Jenis Barang:</label
+                    >Jenis Unit:</label
                   >
                   <input
                     type="text"

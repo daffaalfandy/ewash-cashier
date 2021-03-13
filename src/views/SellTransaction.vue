@@ -54,7 +54,11 @@
 /*global Swal, EventBus, moment, pdfMake, pdfFonts */
 import ItemTransaction from "./components/ItemTransaction";
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import { SHOP_NAME, SHOP_ADDRESS } from "../../config/config";
+import {
+  SHOP_NAME,
+  SHOP_ADDRESS,
+  SHOP_PHONE_NUMBER,
+} from "../../config/config";
 
 export default {
   components: {
@@ -88,6 +92,12 @@ export default {
           },
           {
             text: `${SHOP_ADDRESS}`,
+            style: "headerAddress",
+            alignment: "center",
+            margin: [0, 10, 0, 0],
+          },
+          {
+            text: `${SHOP_PHONE_NUMBER}`,
             style: "headerAddress",
             alignment: "center",
             margin: [0, 10, 0, 0],
